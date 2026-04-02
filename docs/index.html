@@ -1,0 +1,423 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mouse Mover - Keep Your Computer Active</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: #0e0e1a;
+            color: #eaeaea;
+            min-height: 100vh;
+        }
+
+        /* ── Hero ── */
+        .hero {
+            text-align: center;
+            padding: 80px 20px 60px;
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+        }
+
+        .hero h1 { font-size: 3rem; margin-bottom: 12px; color: #fff; }
+        .hero h1 span { color: #00e09e; }
+        .hero .tagline {
+            font-size: 1.2rem; color: #8892a0;
+            max-width: 480px; margin: 0 auto 12px;
+        }
+        .hero .no-install {
+            font-size: 0.95rem; color: #00e09e;
+            margin-bottom: 36px; font-weight: 500;
+        }
+
+        /* ── Download area ── */
+        .download-area { max-width: 420px; margin: 0 auto; }
+
+        .btn-primary {
+            display: flex; align-items: center; justify-content: center;
+            gap: 12px; width: 100%;
+            padding: 18px 32px; border-radius: 14px;
+            font-size: 1.15rem; font-weight: 700;
+            text-decoration: none; border: none; cursor: pointer;
+            background: #00e09e; color: #0e0e1a;
+            transition: transform 0.15s, box-shadow 0.15s;
+        }
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 28px rgba(0, 224, 158, 0.25);
+        }
+        .btn-primary svg { width: 24px; height: 24px; flex-shrink: 0; }
+
+        .btn-other {
+            display: inline-block; margin-top: 14px;
+            font-size: 0.9rem; color: #6b7394;
+            text-decoration: underline; cursor: pointer;
+        }
+        .btn-other:hover { color: #8892a0; }
+
+        /* ── Download progress ── */
+        .download-progress {
+            display: none;
+            margin-top: 20px; padding: 20px;
+            background: #181830; border-radius: 14px;
+            text-align: left;
+        }
+        .download-progress.visible { display: block; }
+
+        .progress-bar-track {
+            width: 100%; height: 8px; border-radius: 4px;
+            background: #222244; margin: 12px 0;
+            overflow: hidden;
+        }
+        .progress-bar-fill {
+            height: 100%; border-radius: 4px;
+            background: linear-gradient(90deg, #00e09e, #00c8ff);
+            width: 0%; transition: width 0.3s ease;
+        }
+
+        .progress-status {
+            font-size: 0.9rem; color: #8892a0;
+            display: flex; justify-content: space-between;
+        }
+
+        .progress-steps {
+            margin-top: 16px; padding-top: 16px;
+            border-top: 1px solid #222244;
+        }
+        .progress-steps h4 {
+            font-size: 0.85rem; color: #6b7394;
+            text-transform: uppercase; letter-spacing: 0.5px;
+            margin-bottom: 10px;
+        }
+        .progress-step {
+            display: flex; align-items: flex-start; gap: 10px;
+            padding: 6px 0; font-size: 0.95rem; color: #8892a0;
+        }
+        .progress-step .check {
+            width: 20px; height: 20px; border-radius: 50%;
+            border: 2px solid #333; flex-shrink: 0;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 0.7rem; color: transparent;
+            transition: all 0.3s;
+        }
+        .progress-step.active .check {
+            border-color: #00e09e; background: #00e09e;
+            color: #0e0e1a;
+        }
+        .progress-step.active { color: #eaeaea; }
+
+        /* ── OS-specific instructions ── */
+        .setup-instructions {
+            display: none; margin-top: 16px; padding: 16px;
+            background: #1a1a2e; border-radius: 10px;
+            border-left: 3px solid #00e09e;
+            font-size: 0.9rem; line-height: 1.7; color: #8892a0;
+        }
+        .setup-instructions.visible { display: block; }
+        .setup-instructions strong { color: #eaeaea; }
+
+        /* ── Features ── */
+        .features {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px; max-width: 860px;
+            margin: 0 auto; padding: 60px 20px;
+        }
+        .feature {
+            background: #181830; border-radius: 16px; padding: 28px;
+        }
+        .feature-icon { font-size: 2rem; margin-bottom: 10px; }
+        .feature h3 { font-size: 1.05rem; margin-bottom: 6px; color: #fff; }
+        .feature p { color: #6b7394; line-height: 1.6; font-size: 0.93rem; }
+
+        /* ── How it works ── */
+        .how-it-works {
+            max-width: 560px; margin: 0 auto;
+            padding: 0 20px 80px; text-align: center;
+        }
+        .how-it-works h2 { font-size: 1.8rem; margin-bottom: 32px; }
+
+        .steps { display: flex; flex-direction: column; gap: 18px; text-align: left; }
+        .step { display: flex; align-items: flex-start; gap: 16px; }
+        .step-num {
+            background: #00e09e; color: #0e0e1a;
+            width: 34px; height: 34px; border-radius: 50%;
+            display: flex; align-items: center; justify-content: center;
+            font-weight: 700; flex-shrink: 0; font-size: 0.95rem;
+        }
+        .step-text h4 { margin-bottom: 3px; color: #fff; }
+        .step-text p { color: #6b7394; font-size: 0.93rem; line-height: 1.5; }
+
+        /* Mac-specific & Windows-specific content — toggled by JS */
+        .mac-only, .win-only { display: none; }
+
+        footer {
+            text-align: center; padding: 24px;
+            color: #6b7394; font-size: 0.85rem;
+            border-top: 1px solid #181830;
+        }
+        footer a { color: #00e09e; text-decoration: none; }
+
+        @media (max-width: 500px) {
+            .hero { padding: 50px 16px 40px; }
+            .hero h1 { font-size: 2.2rem; }
+            .features { padding: 40px 16px; }
+        }
+    </style>
+</head>
+<body>
+
+<div class="hero">
+    <h1><span>Mouse</span> Mover</h1>
+    <p class="tagline">A simple app that keeps your computer active by gently moving your mouse.</p>
+    <p class="no-install">No install wizards. No sign-up. Just download and open.</p>
+
+    <div class="download-area">
+        <!-- Primary button — filled by JS based on OS -->
+        <a id="primary-download" href="#" class="btn-primary" onclick="startDownload(event)">
+            <svg id="os-icon" viewBox="0 0 24 24" fill="currentColor"></svg>
+            <span id="btn-label">Download</span>
+        </a>
+        <a id="other-os-link" class="btn-other" href="#" onclick="showOtherOS(event)"></a>
+
+        <!-- Download progress -->
+        <div id="download-progress" class="download-progress">
+            <div style="display:flex;justify-content:space-between;align-items:center;">
+                <strong id="progress-title" style="color:#eaeaea;">Downloading...</strong>
+                <span id="progress-pct" style="color:#00e09e;font-weight:700;">0%</span>
+            </div>
+            <div class="progress-bar-track">
+                <div id="progress-bar" class="progress-bar-fill"></div>
+            </div>
+            <div class="progress-status">
+                <span id="progress-size"></span>
+                <span id="progress-speed"></span>
+            </div>
+            <div class="progress-steps">
+                <h4>After it downloads:</h4>
+                <div id="next-steps"></div>
+            </div>
+            <div id="setup-help" class="setup-instructions"></div>
+        </div>
+    </div>
+</div>
+
+<div class="features">
+    <div class="feature">
+        <div class="feature-icon">&#9654;&#65039;</div>
+        <h3>One Click Start</h3>
+        <p>Open the app, click the big green button. That's it. Click it again to stop.</p>
+    </div>
+    <div class="feature">
+        <div class="feature-icon">&#128256;</div>
+        <h3>Looks Natural</h3>
+        <p>Random speeds, directions, and little micro-movements so it doesn't look robotic.</p>
+    </div>
+    <div class="feature">
+        <div class="feature-icon">&#128721;</div>
+        <h3>Easy to Stop</h3>
+        <p>Click Stop, close the window, or just shove your mouse into any corner of your screen.</p>
+    </div>
+</div>
+
+<div class="how-it-works">
+    <h2>How It Works</h2>
+    <div class="steps">
+        <div class="step">
+            <div class="step-num">1</div>
+            <div class="step-text">
+                <h4>Download the app</h4>
+                <p>Click the green button above. It'll grab the right version for your computer automatically.</p>
+            </div>
+        </div>
+        <div class="step">
+            <div class="step-num">2</div>
+            <div class="step-text" id="step-2-text">
+                <h4>Open it</h4>
+                <p>Instructions appear after your download starts.</p>
+            </div>
+        </div>
+        <div class="step">
+            <div class="step-num">3</div>
+            <div class="step-text">
+                <h4>Click Start</h4>
+                <p>Your mouse will start moving on its own. Hit Stop whenever you're done.</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<footer>
+    Built by Walston &middot; <a href="https://github.com/walston/mouse-mover">View on GitHub</a>
+</footer>
+
+<script>
+// ── Config — update these when you upload releases ──
+const REPO = "walston/mouse-mover";
+const RELEASE_URL = `https://github.com/${REPO}/releases/latest`;
+// Direct download links — update after first release
+const MAC_DOWNLOAD = `https://github.com/${REPO}/releases/latest/download/MouseMover.zip`;
+const WIN_DOWNLOAD = `https://github.com/${REPO}/releases/latest/download/MouseMover.exe`;
+
+// ── OS Detection ──
+function getOS() {
+    const ua = navigator.userAgent.toLowerCase();
+    const platform = (navigator.platform || "").toLowerCase();
+    if (ua.includes("mac") || platform.includes("mac")) return "mac";
+    if (ua.includes("win") || platform.includes("win")) return "windows";
+    return "unknown";
+}
+
+const userOS = getOS();
+
+// ── Setup UI based on OS ──
+const icon = document.getElementById("os-icon");
+const label = document.getElementById("btn-label");
+const otherLink = document.getElementById("other-os-link");
+const primaryBtn = document.getElementById("primary-download");
+
+const macIcon = '<path d="M18.71 19.5c-.83 1.24-1.71 2.45-3.05 2.47-1.34.03-1.77-.79-3.29-.79-1.53 0-2 .77-3.27.82-1.31.05-2.3-1.32-3.14-2.53C4.25 17 2.94 12.45 4.7 9.39c.87-1.52 2.43-2.48 4.12-2.51 1.28-.02 2.5.87 3.29.87.78 0 2.26-1.07 3.8-.91.65.03 2.47.26 3.64 1.98-.09.06-2.17 1.28-2.15 3.81.03 3.02 2.65 4.03 2.68 4.04-.03.07-.42 1.44-1.38 2.83M13 3.5c.73-.83 1.94-1.46 2.94-1.5.13 1.17-.34 2.35-1.04 3.19-.69.85-1.83 1.51-2.95 1.42-.15-1.15.41-2.35 1.05-3.11z"/>';
+const winIcon = '<path d="M3 12V6.75l8-1.25V12H3zm0 .5h8v6.5l-8-1.25V12.5zM11.5 12V5.25L21 3.5V12h-9.5zm0 .5H21v8.5l-9.5-1.75V12.5z"/>';
+
+if (userOS === "mac") {
+    icon.innerHTML = macIcon;
+    label.textContent = "Download for Mac";
+    primaryBtn.href = MAC_DOWNLOAD;
+    otherLink.textContent = "Need the Windows version?";
+    otherLink.href = WIN_DOWNLOAD;
+} else if (userOS === "windows") {
+    icon.innerHTML = winIcon;
+    label.textContent = "Download for Windows";
+    primaryBtn.href = WIN_DOWNLOAD;
+    otherLink.textContent = "Need the Mac version?";
+    otherLink.href = MAC_DOWNLOAD;
+} else {
+    icon.innerHTML = macIcon;
+    label.textContent = "Download";
+    primaryBtn.href = RELEASE_URL;
+    otherLink.textContent = "See all downloads";
+    otherLink.href = RELEASE_URL;
+}
+
+// ── Mac-specific instructions ──
+const macSteps = [
+    { text: "Find <strong>MouseMover.zip</strong> in your Downloads folder" },
+    { text: "Double-click to unzip it" },
+    { text: "Right-click <strong>Mouse Mover.app</strong> and choose <strong>Open</strong>" },
+    { text: 'If you see "unidentified developer" — click <strong>Open</strong> again to confirm' },
+    { text: "Grant <strong>Accessibility</strong> permission when asked (one time only)" }
+];
+const macHelp = 'First time opening? macOS may block apps from the internet. Just <strong>right-click > Open</strong> instead of double-clicking. You\'ll see a popup — click <strong>Open</strong> to confirm. You only have to do this once.';
+
+// ── Windows-specific instructions ──
+const winSteps = [
+    { text: "Find <strong>MouseMover.exe</strong> in your Downloads folder" },
+    { text: "Double-click to open it" },
+    { text: 'If you see "Windows protected your PC" — click <strong>More info</strong>' },
+    { text: 'Then click <strong>Run anyway</strong>' },
+    { text: "The app opens — click <strong>Start</strong>!" }
+];
+const winHelp = 'Windows SmartScreen may show a blue popup since this app is new. Click <strong>More info</strong>, then <strong>Run anyway</strong>. This is normal for apps that aren\'t from a big company. The app is safe and open-source.';
+
+// ── Download progress simulation ──
+function startDownload(e) {
+    // Don't prevent default — let the real download happen via href
+    const progressEl = document.getElementById("download-progress");
+    progressEl.classList.add("visible");
+
+    const steps = userOS === "mac" ? macSteps : winSteps;
+    const help = userOS === "mac" ? macHelp : winHelp;
+    const fileSize = userOS === "mac" ? "~18 MB" : "~15 MB";
+
+    // Render next steps
+    const stepsContainer = document.getElementById("next-steps");
+    stepsContainer.innerHTML = steps.map((s, i) =>
+        `<div class="progress-step" id="pstep-${i}">
+            <div class="check">&#10003;</div>
+            <span>${s.text}</span>
+        </div>`
+    ).join("");
+
+    // Show setup help
+    const helpEl = document.getElementById("setup-help");
+    helpEl.innerHTML = '<strong style="color:#eaeaea;">Stuck?</strong><br>' + help;
+
+    document.getElementById("progress-size").textContent = fileSize;
+
+    // Simulate progress bar
+    let progress = 0;
+    const interval = setInterval(() => {
+        // Simulate varying speeds
+        const bump = Math.random() * 8 + 2;
+        progress = Math.min(progress + bump, 100);
+
+        document.getElementById("progress-bar").style.width = progress + "%";
+        document.getElementById("progress-pct").textContent = Math.round(progress) + "%";
+
+        if (progress < 40) {
+            document.getElementById("progress-speed").textContent = "~2.5 MB/s";
+        } else if (progress < 80) {
+            document.getElementById("progress-speed").textContent = "~3.1 MB/s";
+        } else {
+            document.getElementById("progress-speed").textContent = "finishing up...";
+        }
+
+        if (progress >= 100) {
+            clearInterval(interval);
+            document.getElementById("progress-title").textContent = "Download complete!";
+            document.getElementById("progress-speed").textContent = "";
+            document.getElementById("progress-pct").textContent = "Done!";
+
+            // Light up the steps one by one
+            steps.forEach((_, i) => {
+                setTimeout(() => {
+                    document.getElementById(`pstep-${i}`).classList.add("active");
+                }, 400 * (i + 1));
+            });
+
+            // Show the help box
+            setTimeout(() => {
+                helpEl.classList.add("visible");
+            }, 400 * (steps.length + 1));
+        }
+    }, 200);
+
+    // Update the "How it works" step 2 with real instructions
+    const step2 = document.getElementById("step-2-text");
+    if (userOS === "mac") {
+        step2.innerHTML = `
+            <h4>Open it</h4>
+            <p>Unzip the download, then <strong>right-click > Open</strong> the app. Grant Accessibility permission when asked.</p>
+        `;
+    } else {
+        step2.innerHTML = `
+            <h4>Open it</h4>
+            <p>Double-click <strong>MouseMover.exe</strong>. If Windows shows a blue popup, click <strong>More info > Run anyway</strong>.</p>
+        `;
+    }
+}
+
+function showOtherOS(e) {
+    e.preventDefault();
+    const href = e.target.href;
+    // Swap the button
+    if (userOS === "mac") {
+        icon.innerHTML = winIcon;
+        label.textContent = "Download for Windows";
+        primaryBtn.href = WIN_DOWNLOAD;
+        otherLink.textContent = "Need the Mac version?";
+        otherLink.href = MAC_DOWNLOAD;
+    } else {
+        icon.innerHTML = macIcon;
+        label.textContent = "Download for Mac";
+        primaryBtn.href = MAC_DOWNLOAD;
+        otherLink.textContent = "Need the Windows version?";
+        otherLink.href = WIN_DOWNLOAD;
+    }
+}
+</script>
+
+</body>
+</html>

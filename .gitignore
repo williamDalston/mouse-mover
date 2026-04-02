@@ -1,0 +1,21 @@
+# Personal files
+*.docx
+*.doc
+*.pdf
+
+# Python
+venv/
+__pycache__/
+*.pyc
+*.pyo
+*.egg-info/
+dist/
+build/
+*.spec
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Old CLI version
+mouse-mover.py
