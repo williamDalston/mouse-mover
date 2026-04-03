@@ -224,7 +224,7 @@
 // ── Config ──
 const REPO = "williamDalston/mouse-mover";
 const RELEASE_URL = `https://github.com/${REPO}/releases/latest`;
-const MAC_DOWNLOAD = `https://github.com/${REPO}/releases/latest/download/MouseMover.zip`;
+const MAC_DOWNLOAD = `https://github.com/${REPO}/releases/latest/download/MouseMover.dmg`;
 const WIN_DOWNLOAD = `https://github.com/${REPO}/releases/latest/download/MouseMover.exe`;
 
 // ── OS Detection ──
@@ -269,13 +269,13 @@ if (userOS === "mac") {
 
 // ── Mac-specific instructions ──
 const macSteps = [
-    { text: "Find <strong>MouseMover.zip</strong> in your Downloads folder" },
-    { text: "Double-click to unzip it" },
-    { text: '<strong style="color:#00e09e;">Important:</strong> Don\'t double-click the app! Instead, <strong>right-click</strong> (or Control-click) <strong>Mouse Mover.app</strong> and choose <strong>"Open"</strong>' },
-    { text: 'You\'ll see a warning popup — click <strong>"Open"</strong> to confirm (you only do this once!)' },
+    { text: "Find <strong>MouseMover.dmg</strong> in your Downloads folder" },
+    { text: "Double-click it — a window will open showing the app" },
+    { text: "Drag <strong>Mouse Mover</strong> into your <strong>Applications</strong> folder" },
+    { text: "Open it from Applications — click <strong>Open</strong> if asked to confirm" },
     { text: 'If asked, go to <strong>System Settings &rarr; Privacy &rarr; Accessibility</strong> and turn on Mouse Mover' }
 ];
-const macHelp = '<strong style="color:#ff6b8a;">Getting "Not Opened" or "Move to Trash"?</strong> That\'s normal — Apple shows this for all apps not from the App Store.<br><br><strong>Fix:</strong> Don\'t double-click. Instead, <strong>right-click</strong> the app &rarr; click <strong>"Open"</strong> &rarr; click <strong>"Open"</strong> again on the popup. This tells macOS you trust this app. You only have to do it once.';
+const macHelp = 'If macOS asks to confirm, click <strong>Open</strong>. This is normal for apps downloaded outside the App Store. You only have to do this once.';
 
 // ── Windows-specific instructions ──
 const winSteps = [

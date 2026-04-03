@@ -20,7 +20,7 @@ Go to the [landing page](https://williamdalston.github.io/mouse-mover/) or grab 
 
 | Platform | Download |
 |----------|----------|
-| **Mac** | [MouseMover.zip](https://github.com/williamDalston/mouse-mover/releases/latest/download/MouseMover.zip) |
+| **Mac** | [MouseMover.dmg](https://github.com/williamDalston/mouse-mover/releases/latest/download/MouseMover.dmg) |
 | **Windows** | [MouseMover.exe](https://github.com/williamDalston/mouse-mover/releases/latest/download/MouseMover.exe) |
 
 The Mac build is code-signed and notarized with Apple — no Gatekeeper warnings.
@@ -52,7 +52,7 @@ The build script handles everything — bundling, code signing (Mac), and notari
 - Just Python and pip
 
 Output:
-- Mac: `dist/MouseMover.zip` (signed + notarized `.app` bundle)
+- Mac: `dist/MouseMover.dmg` (signed + notarized disk image)
 - Windows: `dist/MouseMover.exe`
 
 ## Releasing
@@ -62,7 +62,7 @@ Output:
 3. GitHub Actions builds the Windows `.exe` automatically
 4. For Mac, run `./build.sh` locally (requires your signing certificate), then upload:
    ```bash
-   gh release upload v1.x.x dist/MouseMover.zip --clobber
+   gh release upload v1.x.x dist/MouseMover.dmg --clobber
    ```
 
 ## Project structure

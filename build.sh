@@ -71,32 +71,26 @@ if [[ "$OSTYPE" == "darwin"* ]]; then
     codesign --verify --verbose=2 --deep "$APP"
 
     echo ""
-    echo "Zipping for notarization..."
-    cd dist
-    rm -f MouseMover.zip
-    /usr/bin/ditto -c -k --keepParent "Mouse Mover.app" MouseMover.zip
-    cd ..
+    echo "Creating DMG for notarization..."
+    rm -f dist/MouseMover.dmg
+    hdiutil create -volname "Mouse Mover" \
+        -srcfolder "$APP" \
+        -ov -format UDZO \
+        dist/MouseMover.dmg
 
     echo ""
     echo "Submitting for notarization (this may take a few minutes)..."
-    xcrun notarytool submit dist/MouseMover.zip \
+    xcrun notarytool submit dist/MouseMover.dmg \
         --keychain-profile "notary-profile" \
         --wait
 
     echo ""
     echo "Stapling notarization ticket..."
-    xcrun stapler staple "$APP"
-
-    echo ""
-    echo "Re-zipping with stapled ticket..."
-    cd dist
-    rm -f MouseMover.zip
-    /usr/bin/ditto -c -k --keepParent "Mouse Mover.app" MouseMover.zip
-    cd ..
+    xcrun stapler staple dist/MouseMover.dmg
 
     echo ""
     echo "Done! Signed + notarized. Upload to GitHub Release:"
-    echo "  dist/MouseMover.zip"
+    echo "  dist/MouseMover.dmg"
 else
     pyinstaller \
         --name "MouseMover" \
