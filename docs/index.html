@@ -156,7 +156,7 @@
 <div class="hero">
     <h1><span>Mouse</span> Mover</h1>
     <p class="tagline">A simple app that keeps your computer active by gently moving your mouse.</p>
-    <p class="no-install">No install wizards. No sign-up. Just download and open.</p>
+    <p class="no-install">No install wizards. No sign-up. No Python needed. Just download and open.</p>
 
     <div class="download-area">
         <!-- Primary button — filled by JS based on OS -->
@@ -203,14 +203,15 @@
             <div class="step-num">2</div>
             <div class="step-text" id="step-2-text">
                 <h4>Open it</h4>
-                <p>Instructions appear after your download starts.</p>
+                <p><strong>Mac:</strong> Open the .dmg, drag the app to Applications, then launch it.<br>
+                <strong>Windows:</strong> Double-click the .exe. If you see a blue popup, click "More info" then "Run anyway."</p>
             </div>
         </div>
         <div class="step">
             <div class="step-num">3</div>
             <div class="step-text">
                 <h4>Click Start</h4>
-                <p>Your mouse will start moving on its own. Hit Stop whenever you're done.</p>
+                <p>Hit the big green button. Your mouse moves on its own. Hit it again to stop.</p>
             </div>
         </div>
     </div>
@@ -293,7 +294,7 @@ function startDownload(e) {
     // We just show setup instructions immediately.
     const el = document.getElementById("post-download");
 
-    const os = primaryBtn.href.includes("MouseMover.zip") ? "mac" : "windows";
+    const os = primaryBtn.href.includes("MouseMover.dmg") ? "mac" : "windows";
     const steps = os === "mac" ? macSteps : winSteps;
     const help = os === "mac" ? macHelp : winHelp;
 
@@ -313,6 +314,9 @@ function startDownload(e) {
         </div>
     `;
     el.classList.add("visible");
+
+    // Scroll instructions into view
+    setTimeout(() => el.scrollIntoView({ behavior: "smooth", block: "center" }), 100);
 
     // Update "How it works" step 2
     const step2 = document.getElementById("step-2-text");
