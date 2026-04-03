@@ -9,30 +9,6 @@ permissions:
   contents: write
 
 jobs:
-  build-mac:
-    runs-on: macos-latest
-    steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-python@v5
-        with:
-          python-version: "3.12"
-      - name: Install dependencies
-        run: pip install pyautogui pyinstaller
-      - name: Build .app bundle
-        run: |
-          pyinstaller \
-            --name "Mouse Mover" \
-            --windowed \
-            --onefile \
-            --clean \
-            mouse-mover-gui.py
-      - name: Zip for distribution
-        run: cd dist && zip -r MouseMover.zip "Mouse Mover.app"
-      - uses: actions/upload-artifact@v4
-        with:
-          name: mac-build
-          path: dist/MouseMover.zip
-
   build-windows:
     runs-on: windows-latest
     steps:
@@ -56,21 +32,15 @@ jobs:
           path: dist/MouseMover.exe
 
   release:
-    needs: [build-mac, build-windows]
+    needs: [build-windows]
     runs-on: ubuntu-latest
     steps:
       - uses: actions/download-artifact@v4
         with:
-          name: mac-build
-          path: artifacts/mac
-      - uses: actions/download-artifact@v4
-        with:
           name: windows-build
           path: artifacts/windows
-      - name: Create Release
+      - name: Upload to Release
         uses: softprops/action-gh-release@v2
         with:
-          files: |
-            artifacts/mac/MouseMover.zip
-            artifacts/windows/MouseMover.exe
+          files: artifacts/windows/MouseMover.exe
           generate_release_notes: true
