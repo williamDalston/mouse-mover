@@ -57,66 +57,50 @@
         }
         .btn-other:hover { color: #8892a0; }
 
-        /* ── Download progress ── */
-        .download-progress {
+        /* ── Post-download instructions ── */
+        .post-download {
             display: none;
-            margin-top: 20px; padding: 20px;
+            margin-top: 20px; padding: 24px;
             background: #181830; border-radius: 14px;
             text-align: left;
         }
-        .download-progress.visible { display: block; }
+        .post-download.visible { display: block; }
 
-        .progress-bar-track {
-            width: 100%; height: 8px; border-radius: 4px;
-            background: #222244; margin: 12px 0;
-            overflow: hidden;
+        .post-download .done-header {
+            display: flex; align-items: center; gap: 10px;
+            margin-bottom: 16px;
         }
-        .progress-bar-fill {
-            height: 100%; border-radius: 4px;
-            background: linear-gradient(90deg, #00e09e, #00c8ff);
-            width: 0%; transition: width 0.3s ease;
-        }
-
-        .progress-status {
-            font-size: 0.9rem; color: #8892a0;
-            display: flex; justify-content: space-between;
-        }
-
-        .progress-steps {
-            margin-top: 16px; padding-top: 16px;
-            border-top: 1px solid #222244;
-        }
-        .progress-steps h4 {
-            font-size: 0.85rem; color: #6b7394;
-            text-transform: uppercase; letter-spacing: 0.5px;
-            margin-bottom: 10px;
-        }
-        .progress-step {
-            display: flex; align-items: flex-start; gap: 10px;
-            padding: 6px 0; font-size: 0.95rem; color: #8892a0;
-        }
-        .progress-step .check {
-            width: 20px; height: 20px; border-radius: 50%;
-            border: 2px solid #333; flex-shrink: 0;
+        .done-header .done-icon {
+            width: 28px; height: 28px; border-radius: 50%;
+            background: #00e09e; color: #0e0e1a;
             display: flex; align-items: center; justify-content: center;
-            font-size: 0.7rem; color: transparent;
-            transition: all 0.3s;
+            font-weight: 700; font-size: 0.9rem; flex-shrink: 0;
         }
-        .progress-step.active .check {
-            border-color: #00e09e; background: #00e09e;
-            color: #0e0e1a;
+        .done-header span {
+            font-size: 1.05rem; font-weight: 700; color: #eaeaea;
         }
-        .progress-step.active { color: #eaeaea; }
 
-        /* ── OS-specific instructions ── */
-        .setup-instructions {
-            display: none; margin-top: 16px; padding: 16px;
+        .post-download .setup-step {
+            display: flex; align-items: flex-start; gap: 12px;
+            padding: 8px 0; font-size: 0.95rem; color: #c0c4d0;
+            line-height: 1.5;
+        }
+        .setup-step .step-icon {
+            width: 22px; height: 22px; border-radius: 50%;
+            background: #222244; color: #6b7394;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 0.75rem; font-weight: 700; flex-shrink: 0;
+            margin-top: 1px;
+        }
+        .setup-step strong { color: #fff; }
+
+        .setup-tip {
+            margin-top: 16px; padding: 14px 16px;
             background: #1a1a2e; border-radius: 10px;
             border-left: 3px solid #00e09e;
             font-size: 0.9rem; line-height: 1.7; color: #8892a0;
         }
-        .setup-instructions.visible { display: block; }
-        .setup-instructions strong { color: #eaeaea; }
+        .setup-tip strong { color: #eaeaea; }
 
         /* ── Features ── */
         .features {
@@ -182,25 +166,8 @@
         </a>
         <a id="other-os-link" class="btn-other" href="#" onclick="showOtherOS(event)"></a>
 
-        <!-- Download progress -->
-        <div id="download-progress" class="download-progress">
-            <div style="display:flex;justify-content:space-between;align-items:center;">
-                <strong id="progress-title" style="color:#eaeaea;">Downloading...</strong>
-                <span id="progress-pct" style="color:#00e09e;font-weight:700;">0%</span>
-            </div>
-            <div class="progress-bar-track">
-                <div id="progress-bar" class="progress-bar-fill"></div>
-            </div>
-            <div class="progress-status">
-                <span id="progress-size"></span>
-                <span id="progress-speed"></span>
-            </div>
-            <div class="progress-steps">
-                <h4>After it downloads:</h4>
-                <div id="next-steps"></div>
-            </div>
-            <div id="setup-help" class="setup-instructions"></div>
-        </div>
+        <!-- Post-download instructions (shown after click) -->
+        <div id="post-download" class="post-download"></div>
     </div>
 </div>
 
@@ -250,14 +217,13 @@
 </div>
 
 <footer>
-    Built by Walston &middot; <a href="https://github.com/walston/mouse-mover">View on GitHub</a>
+    Built by Walston &middot; <a href="https://github.com/williamDalston/mouse-mover">View on GitHub</a>
 </footer>
 
 <script>
-// ── Config — update these when you upload releases ──
-const REPO = "walston/mouse-mover";
+// ── Config ──
+const REPO = "williamDalston/mouse-mover";
 const RELEASE_URL = `https://github.com/${REPO}/releases/latest`;
-// Direct download links — update after first release
 const MAC_DOWNLOAD = `https://github.com/${REPO}/releases/latest/download/MouseMover.zip`;
 const WIN_DOWNLOAD = `https://github.com/${REPO}/releases/latest/download/MouseMover.exe`;
 
@@ -321,81 +287,39 @@ const winSteps = [
 ];
 const winHelp = 'Windows SmartScreen may show a blue popup since this app is new. Click <strong>More info</strong>, then <strong>Run anyway</strong>. This is normal for apps that aren\'t from a big company. The app is safe and open-source.';
 
-// ── Download progress simulation ──
+// ── Show instructions after download click ──
 function startDownload(e) {
-    // Don't prevent default — let the real download happen via href
-    const progressEl = document.getElementById("download-progress");
-    progressEl.classList.add("visible");
+    // The href on the button triggers the real download.
+    // We just show setup instructions immediately.
+    const el = document.getElementById("post-download");
 
-    const steps = userOS === "mac" ? macSteps : winSteps;
-    const help = userOS === "mac" ? macHelp : winHelp;
-    const fileSize = userOS === "mac" ? "~18 MB" : "~15 MB";
+    const os = primaryBtn.href.includes("MouseMover.zip") ? "mac" : "windows";
+    const steps = os === "mac" ? macSteps : winSteps;
+    const help = os === "mac" ? macHelp : winHelp;
 
-    // Render next steps
-    const stepsContainer = document.getElementById("next-steps");
-    stepsContainer.innerHTML = steps.map((s, i) =>
-        `<div class="progress-step" id="pstep-${i}">
-            <div class="check">&#10003;</div>
-            <span>${s.text}</span>
-        </div>`
-    ).join("");
+    el.innerHTML = `
+        <div class="done-header">
+            <div class="done-icon">&#8595;</div>
+            <span>Your download should start automatically</span>
+        </div>
+        ${steps.map((s, i) => `
+            <div class="setup-step">
+                <div class="step-icon">${i + 1}</div>
+                <span>${s.text}</span>
+            </div>
+        `).join("")}
+        <div class="setup-tip">
+            <strong>Stuck?</strong><br>${help}
+        </div>
+    `;
+    el.classList.add("visible");
 
-    // Show setup help
-    const helpEl = document.getElementById("setup-help");
-    helpEl.innerHTML = '<strong style="color:#eaeaea;">Stuck?</strong><br>' + help;
-
-    document.getElementById("progress-size").textContent = fileSize;
-
-    // Simulate progress bar
-    let progress = 0;
-    const interval = setInterval(() => {
-        // Simulate varying speeds
-        const bump = Math.random() * 8 + 2;
-        progress = Math.min(progress + bump, 100);
-
-        document.getElementById("progress-bar").style.width = progress + "%";
-        document.getElementById("progress-pct").textContent = Math.round(progress) + "%";
-
-        if (progress < 40) {
-            document.getElementById("progress-speed").textContent = "~2.5 MB/s";
-        } else if (progress < 80) {
-            document.getElementById("progress-speed").textContent = "~3.1 MB/s";
-        } else {
-            document.getElementById("progress-speed").textContent = "finishing up...";
-        }
-
-        if (progress >= 100) {
-            clearInterval(interval);
-            document.getElementById("progress-title").textContent = "Download complete!";
-            document.getElementById("progress-speed").textContent = "";
-            document.getElementById("progress-pct").textContent = "Done!";
-
-            // Light up the steps one by one
-            steps.forEach((_, i) => {
-                setTimeout(() => {
-                    document.getElementById(`pstep-${i}`).classList.add("active");
-                }, 400 * (i + 1));
-            });
-
-            // Show the help box
-            setTimeout(() => {
-                helpEl.classList.add("visible");
-            }, 400 * (steps.length + 1));
-        }
-    }, 200);
-
-    // Update the "How it works" step 2 with real instructions
+    // Update "How it works" step 2
     const step2 = document.getElementById("step-2-text");
-    if (userOS === "mac") {
-        step2.innerHTML = `
-            <h4>Open it</h4>
-            <p>Unzip the download, then <strong>right-click > Open</strong> the app. Grant Accessibility permission when asked.</p>
-        `;
+    if (os === "mac") {
+        step2.innerHTML = '<h4>Open it</h4><p>Unzip the download, then <strong>right-click &gt; Open</strong> the app. Grant Accessibility permission when asked.</p>';
     } else {
-        step2.innerHTML = `
-            <h4>Open it</h4>
-            <p>Double-click <strong>MouseMover.exe</strong>. If Windows shows a blue popup, click <strong>More info > Run anyway</strong>.</p>
-        `;
+        step2.innerHTML = '<h4>Open it</h4><p>Double-click <strong>MouseMover.exe</strong>. If Windows shows a blue popup, click <strong>More info &gt; Run anyway</strong>.</p>';
     }
 }
 
