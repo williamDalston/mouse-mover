@@ -4,6 +4,7 @@ Mouse Mover - GUI Version
 Cross-platform (Mac/Windows) mouse activity simulator.
 """
 
+import os
 import sys
 import math
 import random
@@ -185,8 +186,27 @@ class MouseMoverApp:
         self.screen_height: Optional[int] = None
 
         self._load_screen_size()
+        self._set_icon()
         self._build_ui()
         self._update_timer()
+
+    def _set_icon(self) -> None:
+        try:
+            # When bundled with PyInstaller, files are in _MEIPASS or app bundle
+            if getattr(sys, 'frozen', False):
+                base = sys._MEIPASS
+            else:
+                base = os.path.dirname(os.path.abspath(__file__))
+
+            if sys.platform == "darwin":
+                # macOS uses the .icns set in the Info.plist — nothing to do here
+                pass
+            else:
+                ico_path = os.path.join(base, "icon.ico")
+                if os.path.exists(ico_path):
+                    self.root.iconbitmap(ico_path)
+        except Exception:
+            pass
 
     def _load_screen_size(self) -> None:
         try:

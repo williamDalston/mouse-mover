@@ -22,6 +22,7 @@ if [[ "$OSTYPE" == "darwin"* ]]; then
         --name "Mouse Mover" \
         --windowed \
         --clean \
+        --icon icon.icns \
         --osx-bundle-identifier "$BUNDLE_ID" \
         mouse-mover-gui.py
 
@@ -97,6 +98,7 @@ else
         --windowed \
         --onefile \
         --clean \
+        --icon icon.ico \
         mouse-mover-gui.py
 
     echo ""
