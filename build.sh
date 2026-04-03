@@ -21,7 +21,6 @@ if [[ "$OSTYPE" == "darwin"* ]]; then
     pyinstaller \
         --name "Mouse Mover" \
         --windowed \
-        --onefile \
         --clean \
         --osx-bundle-identifier "$BUNDLE_ID" \
         mouse-mover-gui.py
@@ -29,14 +28,28 @@ if [[ "$OSTYPE" == "darwin"* ]]; then
     APP="dist/Mouse Mover.app"
 
     echo ""
-    echo "Signing app..."
+    echo "Signing all binaries inside the app..."
+
+    # Sign every .so, .dylib, and framework binary inside the bundle
+    find "$APP" -type f \( -name "*.so" -o -name "*.dylib" \) -exec \
+        codesign --force --options runtime --sign "$DEVELOPER_ID" --timestamp {} \;
+
+    # Sign the Python framework binary if present
+    find "$APP" -path "*/Python.framework/Versions/*/Python" -exec \
+        codesign --force --options runtime --sign "$DEVELOPER_ID" --timestamp {} \;
+
+    # Sign the main executable
+    codesign --force --options runtime --sign "$DEVELOPER_ID" --timestamp \
+        "$APP/Contents/MacOS/Mouse Mover"
+
+    # Sign the whole .app bundle
     codesign --deep --force --options runtime \
         --sign "$DEVELOPER_ID" \
         --timestamp \
         "$APP"
 
     echo "Verifying signature..."
-    codesign --verify --verbose=2 "$APP"
+    codesign --verify --verbose=2 --deep "$APP"
 
     echo ""
     echo "Zipping for notarization..."
