@@ -13,6 +13,12 @@ dist/
 build/
 *.spec
 
+# Signing / secrets
+*.key
+*.p12
+*.cer
+*.certSigningRequest
+
 # OS
 .DS_Store
 Thumbs.db

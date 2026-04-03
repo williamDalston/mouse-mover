@@ -271,21 +271,21 @@ if (userOS === "mac") {
 const macSteps = [
     { text: "Find <strong>MouseMover.zip</strong> in your Downloads folder" },
     { text: "Double-click to unzip it" },
-    { text: "Right-click <strong>Mouse Mover.app</strong> and choose <strong>Open</strong>" },
-    { text: 'If you see "unidentified developer" — click <strong>Open</strong> again to confirm' },
-    { text: "Grant <strong>Accessibility</strong> permission when asked (one time only)" }
+    { text: '<strong style="color:#00e09e;">Important:</strong> Don\'t double-click the app! Instead, <strong>right-click</strong> (or Control-click) <strong>Mouse Mover.app</strong> and choose <strong>"Open"</strong>' },
+    { text: 'You\'ll see a warning popup — click <strong>"Open"</strong> to confirm (you only do this once!)' },
+    { text: 'If asked, go to <strong>System Settings &rarr; Privacy &rarr; Accessibility</strong> and turn on Mouse Mover' }
 ];
-const macHelp = 'First time opening? macOS may block apps from the internet. Just <strong>right-click > Open</strong> instead of double-clicking. You\'ll see a popup — click <strong>Open</strong> to confirm. You only have to do this once.';
+const macHelp = '<strong style="color:#ff6b8a;">Getting "Not Opened" or "Move to Trash"?</strong> That\'s normal — Apple shows this for all apps not from the App Store.<br><br><strong>Fix:</strong> Don\'t double-click. Instead, <strong>right-click</strong> the app &rarr; click <strong>"Open"</strong> &rarr; click <strong>"Open"</strong> again on the popup. This tells macOS you trust this app. You only have to do it once.';
 
 // ── Windows-specific instructions ──
 const winSteps = [
     { text: "Find <strong>MouseMover.exe</strong> in your Downloads folder" },
     { text: "Double-click to open it" },
-    { text: 'If you see "Windows protected your PC" — click <strong>More info</strong>' },
-    { text: 'Then click <strong>Run anyway</strong>' },
+    { text: 'If you see a blue <strong>"Windows protected your PC"</strong> popup — click <strong>"More info"</strong> (small text link)' },
+    { text: 'Then click <strong>"Run anyway"</strong>' },
     { text: "The app opens — click <strong>Start</strong>!" }
 ];
-const winHelp = 'Windows SmartScreen may show a blue popup since this app is new. Click <strong>More info</strong>, then <strong>Run anyway</strong>. This is normal for apps that aren\'t from a big company. The app is safe and open-source.';
+const winHelp = '<strong style="color:#ff6b8a;">Getting a blue "Windows protected your PC" popup?</strong> That\'s normal for new apps.<br><br><strong>Fix:</strong> Click the small <strong>"More info"</strong> text, then click <strong>"Run anyway"</strong>. This is just Windows being cautious — the app is safe and open-source.';
 
 // ── Show instructions after download click ──
 function startDownload(e) {

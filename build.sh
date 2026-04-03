@@ -2,11 +2,14 @@
 # Build Mouse Mover into a standalone app
 # Usage: ./build.sh
 #
-# Produces release-ready files that match the download links on the site:
-#   Mac:     dist/MouseMover.zip  (contains Mouse Mover.app)
-#   Windows: dist/MouseMover.exe
+# Mac:     Builds, signs, notarizes, and zips → dist/MouseMover.zip
+# Windows: Builds → dist/MouseMover.exe
 
 set -e
+
+DEVELOPER_ID="Developer ID Application: William Alston (AYZ9SP42W8)"
+TEAM_ID="AYZ9SP42W8"
+BUNDLE_ID="com.williamalston.mousemover"
 
 echo "Installing dependencies..."
 pip install -r requirements.txt
@@ -20,15 +23,47 @@ if [[ "$OSTYPE" == "darwin"* ]]; then
         --windowed \
         --onefile \
         --clean \
+        --osx-bundle-identifier "$BUNDLE_ID" \
         mouse-mover-gui.py
 
-    echo "Zipping for distribution..."
+    APP="dist/Mouse Mover.app"
+
+    echo ""
+    echo "Signing app..."
+    codesign --deep --force --options runtime \
+        --sign "$DEVELOPER_ID" \
+        --timestamp \
+        "$APP"
+
+    echo "Verifying signature..."
+    codesign --verify --verbose=2 "$APP"
+
+    echo ""
+    echo "Zipping for notarization..."
     cd dist
-    zip -r MouseMover.zip "Mouse Mover.app"
+    rm -f MouseMover.zip
+    /usr/bin/ditto -c -k --keepParent "Mouse Mover.app" MouseMover.zip
     cd ..
 
     echo ""
-    echo "Done! Upload this to a GitHub Release:"
+    echo "Submitting for notarization (this may take a few minutes)..."
+    xcrun notarytool submit dist/MouseMover.zip \
+        --keychain-profile "notary-profile" \
+        --wait
+
+    echo ""
+    echo "Stapling notarization ticket..."
+    xcrun stapler staple "$APP"
+
+    echo ""
+    echo "Re-zipping with stapled ticket..."
+    cd dist
+    rm -f MouseMover.zip
+    /usr/bin/ditto -c -k --keepParent "Mouse Mover.app" MouseMover.zip
+    cd ..
+
+    echo ""
+    echo "Done! Signed + notarized. Upload to GitHub Release:"
     echo "  dist/MouseMover.zip"
 else
     pyinstaller \
