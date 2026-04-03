@@ -102,6 +102,11 @@
         }
         .setup-tip strong { color: #eaeaea; }
 
+        .setup-img {
+            margin-top: 14px; border-radius: 8px;
+            max-width: 100%; height: auto;
+        }
+
         /* ── Features ── */
         .features {
             display: grid;
@@ -286,7 +291,7 @@ const winSteps = [
     { text: 'Then click <strong>"Run anyway"</strong>' },
     { text: "The app opens — click <strong>Start</strong>!" }
 ];
-const winHelp = '<strong style="color:#ff6b8a;">Getting a blue "Windows protected your PC" popup?</strong> That\'s normal for new apps.<br><br><strong>Fix:</strong> Click the small <strong>"More info"</strong> text, then click <strong>"Run anyway"</strong>. This is just Windows being cautious — the app is safe and open-source.';
+const winHelp = '<strong style="color:#ff6b8a;">Getting a blue "Windows protected your PC" popup?</strong> That\'s normal for new apps.<br><br><strong>Fix:</strong> Click the small <strong>"More info"</strong> text, then click <strong>"Run anyway"</strong>. This is just Windows being cautious — the app is safe and open-source.<br><img class="setup-img" src="windows-help.png" alt="Step 1: Click More info. Step 2: Click Run anyway.">';
 
 // ── Show instructions after download click ──
 function startDownload(e) {
